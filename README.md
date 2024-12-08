@@ -59,7 +59,7 @@ In the config file (optional):
 * Add safegurards to make sure the noise remains imperceptible.
 * Add unit and end to end tests to increase testing coverage and robustness against edge cases.
 * Include thorough project description e.g. details on rationale and overview.
-* Package for its distribution.
+* Review refactoring and package for its distribution.
 
 
 
