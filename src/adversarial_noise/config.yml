@@ -1,0 +1,4 @@
+epsilon: 0.01
+output_path: "../../output_images/"
+model_name: "resnet50"
+image_range: [0, 1]
