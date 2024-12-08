@@ -56,3 +56,44 @@ def apply_perturbation(
     adversarial_image = image_tensor - perturbation
     return torch.clamp(adversarial_image, -0.5, 0.5)
 
+
+def generate_adversarial_image(
+    model: torch.nn.Module,
+    image_tensor: torch.Tensor,
+    target_category: str,
+    categories: list[str],
+    device: torch.device,
+    epsilon: float,
+) -> torch.Tensor:
+    """
+    Generate an adversarial image to misclassify the input image.
+
+    Parameters
+    ----------
+        model: Pre-trained model.
+        image_tensor: Preprocessed image tensor of shape
+            (1, C, H, W).
+        target_category: Desired misclassification target category.
+        categories: List of model's categories.
+        device: Target device (CPU or GPU).
+        epsilon: Perturbation strength.
+
+    Returns
+    -------
+        torch.Tensor: Adversarial image tensor.
+    """
+    # Ensure image tensor is in the correct dtype
+    image_tensor = image_tensor.to(dtype=torch.float32)
+
+    # Prepare tensor for target label
+    target_tensor = convert_category_to_tensor(
+        target_category, categories, device
+    )
+    # Ensure tensors are of dtype torch.long
+    target_tensor = target_tensor.to(torch.long)
+
+    # Compute loss gradient
+    gradient = calculate_loss_gradient(model, image_tensor, target_tensor)
+
+    # Apply perturbation
+    return apply_perturbation(image_tensor, gradient, epsilon)
