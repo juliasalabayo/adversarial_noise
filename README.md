@@ -51,15 +51,15 @@ In the config file (optional):
 * `image_range`: Range for image clamping. Default is [0, 1]
 
 ## TO DO
-* Iterate adversarial conversion until the image is successfully classified as the desired target.
-* Assess performance with a wider range of images and target categories, considering training, validation, and testing datasets
+* The current code transforms an image and increases the confidence to be classified as the target category but the confidence is still low. Iterate adversarial conversion until the image is successfully classified as the desired target.
+* A small sample of images was tested. Assess performance with a wider range of images (e.g. CIFAR10, MNIST datasets) and target categories, considering training, validation, and testing datasets.
 * Do hyperparameter fine tuning. Different parameters, including epsilon, image size, image range for clamping, require exploration to opitmise performance. 
 * Make other classifying models available e.g. other torchvision models.
 * Explore different loss functions to generate noise (currently only used cross_entropy).
-* Add safegurards to make sure the noise remains imperceptible.
+* Add safeguards to make sure the noise remains imperceptible.
 * Add unit and end to end tests to increase testing coverage and robustness against edge cases.
-* Include thorough project description e.g. details on rationale and overview.
-* Review refactoring and package for its distribution.
+* Improve documentation with thorough project description e.g. details on rationale and overview.
+* Review refactoring and package for distribution.
 
 
 
