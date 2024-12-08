@@ -47,6 +47,8 @@ lint.ignore = [
   "ISC002",   # Implicitly concatenated string literals over multiple lines (formatter conflict)
   "D104",     # Missing docstring in public package
   "D100",     # Missing docstring in public module
+  "D205",     # 1 blank line required between summary line and description
+  "PLR0913",  # Too many arguments in function definition
 ]
 
 exclude = [
