@@ -114,7 +114,7 @@ def compare_confidences(
     target_category: str,
     categories: list[str],
     adversarial_tensor: torch.Tensor,
-):
+) -> torch.Tensor:
     """Compare the confidence for the target category in the original and
     adversarial images.
 
@@ -157,6 +157,10 @@ def compare_confidences(
         f"Adversarial confidence for target category '{target_category}'"
         f": {adversarial_confidence:.4f}"
     )
+    logger.info(
+        f"Adversarial category predicted as "
+        f"'{categories[adversarial_pred.argmax()]}'"
+    )
 
     # Compare confidences
     if adversarial_confidence < original_confidence:
@@ -170,6 +174,3 @@ def compare_confidences(
     else:
         logger.info("The confidence for the target category remains the same.")
     return adversarial_pred
-
-
-# def perform_adversarial_modification():
