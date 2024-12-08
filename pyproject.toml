@@ -45,6 +45,8 @@ lint.ignore = [
   "COM812",   # Trailing comma missing (formatter conflict)
   "ISC001",   # Implicitly concatenated string literals on one line	(formatter conflict)
   "ISC002",   # Implicitly concatenated string literals over multiple lines (formatter conflict)
+  "D104",     # Missing docstring in public package
+  "D100",     # Missing docstring in public module
 ]
 
 exclude = [
