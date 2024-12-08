@@ -37,7 +37,10 @@ def calculate_loss_gradient(
 
 
 def apply_perturbation(
-    image_tensor: torch.Tensor, gradient: torch.Tensor, epsilon: float
+    image_tensor: torch.Tensor,
+    gradient: torch.Tensor,
+    epsilon: float,
+    image_range: list[float, float],
 ) -> torch.Tensor:
     """
     Apply adversarial perturbation to the image.
@@ -54,7 +57,7 @@ def apply_perturbation(
     """
     perturbation = epsilon * gradient.sign()
     adversarial_image = image_tensor - perturbation
-    return torch.clamp(adversarial_image, -0.5, 0.5)
+    return torch.clamp(adversarial_image, min(image_range), max(image_range))
 
 
 def generate_adversarial_image(
@@ -64,6 +67,7 @@ def generate_adversarial_image(
     categories: list[str],
     device: torch.device,
     epsilon: float,
+    image_range: list[float, float],
 ) -> torch.Tensor:
     """
     Generate an adversarial image to misclassify the input image.
@@ -96,4 +100,4 @@ def generate_adversarial_image(
     gradient = calculate_loss_gradient(model, image_tensor, target_tensor)
 
     # Apply perturbation
-    return apply_perturbation(image_tensor, gradient, epsilon)
+    return apply_perturbation(image_tensor, gradient, epsilon, image_range)
