@@ -51,6 +51,7 @@ lint.ignore = [
   "PLR0913",  # Too many arguments in function definition
   "ANN101",   # Missing type annotation for `self` in method
   "ANN401",   # Dynamically typed expressions (typing.Any) are disallowed in `default`
+  "G004",     # Logging statement uses f-string
 ]
 
 exclude = [

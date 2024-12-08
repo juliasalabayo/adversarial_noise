@@ -1,4 +1,5 @@
 import argparse
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -6,12 +7,26 @@ import torch
 import yaml
 from torchvision.transforms import ToPILImage
 
-from adversarial_noise.adversarial_model import generate_adversarial_image
+from adversarial_noise.adversarial_model import (
+    compare_confidences,
+    generate_adversarial_image,
+)
 from adversarial_noise.utils import (
     get_image,
     get_model_categories,
     load_model,
 )
+
+logger = logging.getLogger("adversarial_noise")
+
+
+def setup_logging(level: str) -> None:
+    """Set up logging format."""
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(level)
 
 
 class Config:
@@ -63,6 +78,7 @@ def main() -> None:
         help="Path to the configuration file (default: config.yml)",
     )
     args = parser.parse_args()
+    setup_logging(level="INFO")
 
     # Load and validate configuration
     config = Config(args.config)
@@ -109,7 +125,11 @@ def main() -> None:
     )
     adversarial_image = ToPILImage()(adversarial_tensor.squeeze(0).cpu())
     adversarial_image.save(output_file)
-    print(f"Adversarial image saved to {output_file}")  # noqa: T201
+    logger.info(f"Adversarial image saved to {output_file}")
+
+    compare_confidences(
+        model, image_tensor, target_category, categories, adversarial_tensor
+    )
 
 
 if __name__ == "__main__":

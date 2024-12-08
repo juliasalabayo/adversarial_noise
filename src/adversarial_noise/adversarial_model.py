@@ -1,6 +1,10 @@
+import logging
+
 import torch
 
 from adversarial_noise.utils import convert_category_to_tensor
+
+logger = logging.getLogger("adversarial_noise")
 
 
 def calculate_loss_gradient(
@@ -12,10 +16,11 @@ def calculate_loss_gradient(
     Calculate the gradient of the loss of the input image in comparison to the
     target label.
 
-    Args:
-        model (torch.nn.Module): Pre-trained model.
-        image_tensor (torch.Tensor): Preprocessed image tensor.
-        target_tensor (torch.Tensor): Target category tensor.
+    Parameters
+    ----------
+        model: Pre-trained model.
+        image_tensor: Preprocessed image tensor.
+        target_tensor: Target category tensor.
 
     Returns
     -------
@@ -101,3 +106,70 @@ def generate_adversarial_image(
 
     # Apply perturbation
     return apply_perturbation(image_tensor, gradient, epsilon, image_range)
+
+
+def compare_confidences(
+    model: torch.nn.Module,
+    image_tensor: torch.Tensor,
+    target_category: str,
+    categories: list[str],
+    adversarial_tensor: torch.Tensor,
+):
+    """Compare the confidence for the target category in the original and
+    adversarial images.
+
+    Parameters
+    ----------
+        model: Pre-trained model.
+        image_tensor: Preprocessed image tensor of shape
+            (1, C, H, W).
+        target_category: Desired misclassification target category.
+        categories: List of model's categories.
+        adversarial_tensor: Tensor of the image with adversarial noise.
+
+    Returns
+    -------
+        torch.Tensor: Adversarial image tensor.
+    """
+    with torch.no_grad():
+        # Get model's predictions for the original image
+        original_pred = model(image_tensor)
+        original_pred_prob = torch.nn.functional.softmax(original_pred, dim=1)
+        original_confidence = original_pred_prob[
+            0, categories.index(target_category)
+        ].item()
+
+    # Get model's predictions for the adversarial image
+    adversarial_pred = model(adversarial_tensor)
+    adversarial_pred_prob = torch.nn.functional.softmax(
+        adversarial_pred, dim=1
+    )
+    adversarial_confidence = adversarial_pred_prob[
+        0, categories.index(target_category)
+    ].item()
+
+    # Log the confidences
+    logger.info(
+        f"Original confidence for target category '{target_category}': "
+        f"{original_confidence:.4f}"
+    )
+    logger.info(
+        f"Adversarial confidence for target category '{target_category}'"
+        f": {adversarial_confidence:.4f}"
+    )
+
+    # Compare confidences
+    if adversarial_confidence < original_confidence:
+        logger.info(
+            "The adversarial image reduced target category confidence."
+        )
+    elif adversarial_confidence > original_confidence:
+        logger.info(
+            "The adversarial image increased target category confidence."
+        )
+    else:
+        logger.info("The confidence for the target category remains the same.")
+    return adversarial_pred
+
+
+# def perform_adversarial_modification():
